@@ -20,11 +20,6 @@
 - Умный AI для персональных рекомендаций.
 - Экономия времени и снижение стресса.
 
----
-
-**Начните управлять задачами проще и умнее с Graphite Time Management!**
-
----
 
 # Инструкция по установке
 
@@ -33,7 +28,4 @@
 python -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
-pre-commit install
 ```
-
-
