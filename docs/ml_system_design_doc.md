@@ -341,13 +341,15 @@ $$
 - $T_{\text{pred}, i}$ — предсказанное время выполнения задачи \( i \).
 - $T_{\text{actual}, i}$ — фактическое время выполнения задачи \( i \).
 - $W_i$ — вес ошибки:
-  $$
-  W_i =
-  \begin{cases}
-  \alpha, & \text{если } T_{\text{pred}, i} < T_{\text{actual}, i}, \\
-  1, & \text{если } T_{\text{pred}, i} \geq T_{\text{actual}, i}.
-  \end{cases}
-  $$
+
+$$
+W_i =
+\begin{cases}
+\alpha, & \text{если } T_{\text{pred}, i} < T_{\text{actual}, i}, \\
+1, & \text{если } T_{\text{pred}, i} \geq T_{\text{actual}, i}.
+\end{cases}
+$$
+
 - $alpha$ — коэффициент штрафа за недооценку времени (например, $alpha = 2$).
 - $N$ — общее количество задач.
 
