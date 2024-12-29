@@ -1,3 +1,23 @@
+[tool.poetry]
+name = "mlsd-course-2024"
+version = "0.1.0"
+description = ""
+authors = ["victor.barbarich <victor.barbarich@dif.tech>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+scikit-learn = "^1.6.0"
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.8.4"
+black = "^24.10.0"
+pre-commit = "^4.0.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
 [tool.ruff]
 line-length = 88
 lint.select = ["E", "W", "F"]
