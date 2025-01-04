@@ -1,0 +1,19 @@
+schema: '2.0'
+stages:
+  get_data_from_dwh:
+    cmd: "python src/data/get_raw_data_from_dwh.py --query-path data/raw/query_public.sql
+      --params-path data/raw/.private_params.json --output-path data/raw/jira_tasks_from_dwh.csv\n"
+    deps:
+    - path: data/raw/.private_params.json
+      hash: md5
+      md5: 4fee54e0d0e384ae46a05a1b0f188b68
+      size: 203
+    - path: data/raw/query_public.sql
+      hash: md5
+      md5: f6d0f8760b9a9b72e9080d21c89eaf0a
+      size: 1022
+    outs:
+    - path: data/raw/jira_tasks_from_dwh.csv
+      hash: md5
+      md5: 6842a51f0ef6cb37da6b102d62ac785c
+      size: 326197
