@@ -1,9 +1,85 @@
+from pathlib import Path
+from typing import Optional
+
+from pydantic import Field, model_validator
 from pydantic_settings import BaseSettings
-from pydantic import Field
-from dotenv import load_dotenv
 
-load_dotenv()
+import dotenv
+
+dotenv.load_dotenv()
 
 
-class Config(BaseSettings):
-    anthropic_api_key: str = Field(alias="anthropic_api_key")
+class BaseConfig(BaseSettings):
+    """
+    A base config class for your DS project that:
+      - Reads environment variables from .env
+      - Allows overriding any field via environment variables or code
+    """
+
+    environment: str = Field(default="development", alias="ENVIRONMENT")
+    debug: bool = Field(default=False, alias="DEBUG")
+
+    mlflow_tracking_uri: Optional[str] = Field(
+        default="http://localhost:8080", alias="MLFLOW_TRACKING_URI"
+    )
+    mlflow_experiment_name: Optional[str] = Field(
+        default="experiment", alias="MLFLOW_EXPERIMENT_NAME"
+    )
+
+    proj_root: Optional[Path] = None
+    data_dir: Optional[Path] = None
+    raw_data_dir: Optional[Path] = None
+    interim_data_dir: Optional[Path] = None
+    processed_data_dir: Optional[Path] = None
+    external_data_dir: Optional[Path] = None
+    models_dir: Optional[Path] = None
+    reports_dir: Optional[Path] = None
+    figures_dir: Optional[Path] = None
+    src_dir: Optional[Path] = None
+
+    snowflake_account: Optional[str] = Field(alias="SNOWFLAKE_ACCOUNT")
+    snowflake_user: Optional[str] = Field(alias="SNOWFLAKE_USER")
+    snowflake_password: Optional[str] = Field(alias="SNOWFLAKE_PASSWORD")
+    snowflake_warehouse: Optional[str] = Field(alias="SNOWFLAKE_WAREHOUSE")
+    snowflake_role: Optional[str] = Field(alias="SNOWFLAKE_ROLE")
+    snowflake_database: Optional[str] = Field(alias="SNOWFLAKE_DATABASE")
+    snowflake_schema: Optional[str] = Field(alias="SNOWFLAKE_SCHEMA")
+
+    random_state: int = Field(default=42, alias="RANDOM_STATE")
+
+    @model_validator(mode="after")
+    def set_default_paths(self) -> "BaseConfig":
+        """
+        If a path was not explicitly provided, set defaults based on proj_root.
+        """
+        if self.proj_root is None:
+            self.proj_root = (
+                Path(__file__).resolve().parent.parent
+            )  # e.g., going one parent up
+
+        self._set_data_paths()
+        self._set_misc_paths()
+
+        return self
+
+    def _set_data_paths(self):
+        if self.data_dir is None:
+            self.data_dir = self.proj_root / "data"
+        if self.raw_data_dir is None:
+            self.raw_data_dir = self.data_dir / "raw"
+        if self.interim_data_dir is None:
+            self.interim_data_dir = self.data_dir / "interim"
+        if self.processed_data_dir is None:
+            self.processed_data_dir = self.data_dir / "processed"
+        if self.external_data_dir is None:
+            self.external_data_dir = self.data_dir / "external"
+
+    def _set_misc_paths(self):
+        if self.models_dir is None:
+            self.models_dir = self.proj_root / "models"
+        if self.reports_dir is None:
+            self.reports_dir = self.proj_root / "reports"
+        if self.figures_dir is None:
+            self.figures_dir = self.reports_dir / "figures"
+        if self.src_dir is None:
+            self.src_dir = self.proj_root / "src"
