@@ -28,7 +28,7 @@ build-backend = "poetry.core.masonry.api"
 [tool.ruff]
 line-length = 88
 lint.select = ["E", "F", "W", "C", "N", "S"]
-lint.ignore = ["E501"]
+lint.ignore = ["E501", "S101"]
 
 [tool.black]
 line-length = 88
