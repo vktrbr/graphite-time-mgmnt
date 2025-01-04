@@ -13,9 +13,9 @@ config = BaseConfig()
 
 @app.command()
 def main(
-        query_path: Path = config.raw_data_dir / "query_public.sql",
-        params_path: Path = config.raw_data_dir / ".private_params.json",
-        output_path: Path = config.raw_data_dir / f"jira_tasks_from_dwh.csv",
+    query_path: Path = config.raw_data_dir / "query_public.sql",
+    params_path: Path = config.raw_data_dir / ".private_params.json",
+    output_path: Path = config.raw_data_dir / "jira_tasks_from_dwh.csv",
 ):
     """
     Get raw data from DWH.
