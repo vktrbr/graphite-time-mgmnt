@@ -1,9 +1,11 @@
 import anthropic
-from src.config import Config
+from src.config import BaseConfig
+
+config = BaseConfig()
 
 
 class PIIPurifier:
-    def __init__(self, api_key: str = Config().anthropic_api_key):
+    def __init__(self, api_key: str = config.anthropic_api_key):
         self.client = anthropic.Anthropic(api_key=api_key)
 
     def purify(self, text) -> str:
@@ -22,17 +24,7 @@ class PIIPurifier:
                 "If the text contains no personally identifiable information, "
                 "copy it word-for-word without replacing anything."
             ),
-            messages=[
-                {
-                    "role": "user",
-                    "content": [
-                        {
-                            "type": "text",
-                            "text": text
-                        }
-                    ]
-                }
-            ]
+            messages=[{"role": "user", "content": [{"type": "text", "text": text}]}],
         )
         result = messages.content[0].text
 

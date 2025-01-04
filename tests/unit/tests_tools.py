@@ -8,9 +8,9 @@ def purifier():
 
 
 def test_purify(purifier):
-    text = ("This is a test text with some PII like John Doe,"
-            " 555-555-5555, and test@mail.com")
-    purify_text = purifier.purify(text)
-    assert purify_text == (
-        "This is a test text with some PII like XXX, XXX, and XXX"
+    text = (
+        "This is a test text with some PII like John Doe,"
+        " 555-555-5555, and test@mail.com"
     )
+    purify_text = purifier.purify(text)
+    assert purify_text == ("This is a test text with some PII like XXX, XXX, and XXX")

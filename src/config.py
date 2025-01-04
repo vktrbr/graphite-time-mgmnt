@@ -46,6 +46,7 @@ class BaseConfig(BaseSettings):
     snowflake_schema: Optional[str] = Field(alias="SNOWFLAKE_SCHEMA")
 
     random_state: int = Field(default=42, alias="RANDOM_STATE")
+    anthropic_api_key: Optional[str] = Field(alias="ANTHROPIC_API_KEY")
 
     @model_validator(mode="after")
     def set_default_paths(self) -> "BaseConfig":
