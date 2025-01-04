@@ -37,16 +37,11 @@ class BaseConfig(BaseSettings):
     figures_dir: Optional[Path] = None
     src_dir: Optional[Path] = None
 
-    snowflake_account: Optional[str] = Field(alias="SNOWFLAKE_ACCOUNT")
-    snowflake_user: Optional[str] = Field(alias="SNOWFLAKE_USER")
-    snowflake_password: Optional[str] = Field(alias="SNOWFLAKE_PASSWORD")
-    snowflake_warehouse: Optional[str] = Field(alias="SNOWFLAKE_WAREHOUSE")
-    snowflake_role: Optional[str] = Field(alias="SNOWFLAKE_ROLE")
-    snowflake_database: Optional[str] = Field(alias="SNOWFLAKE_DATABASE")
-    snowflake_schema: Optional[str] = Field(alias="SNOWFLAKE_SCHEMA")
-
     random_state: int = Field(default=42, alias="RANDOM_STATE")
     anthropic_api_key: Optional[str] = Field(alias="ANTHROPIC_API_KEY")
+    jira_api_key: Optional[str] = Field(alias="JIRA_API_KEY")
+    jira_domain: Optional[str] = Field(alias="JIRA_DOMAIN")
+    jira_project_key: Optional[str] = Field(alias="JIRA_PROJECT_KEY")
 
     @model_validator(mode="after")
     def set_default_paths(self) -> "BaseConfig":

@@ -1,19 +1,14 @@
 stages:
-  get_data_from_dwh:
+  get_data_from_jira_api:
     desc: >
-      This stage will receive data from DWH and save it to the local storage. 
-      In production, this data should be requested from Jira directly and save it to the some S3 bucket.
-      Query does not contain any sensitive information, so it can be stored in the repository.
-      But the parameters for the query are stored in the .private_params.json file, which is added to the .gitignore file.
+      This stage will receive data directly from the API and save it to the local storage.
+      The data retrieval process does not involve any sensitive information, so the scripts and configurations can be stored in the repository.
+      However, sensitive parameters for the API request are stored in the .env, which is added to the .gitignore file.
 
     cmd: >
-      python src/data/get_raw_data_from_dwh.py
-      --query-path data/raw/query_public.sql
-      --params-path data/raw/.private_params.json
-      --output-path data/raw/jira_tasks_from_dwh.csv
+      python src/data/get_raw_data_from_jira_api.py
+      --output-path data/raw/raw_jira_tasks_from_api.json
     deps:
-      - data/raw/query_public.sql
-      - data/raw/.private_params.json
+      - src/.env
     outs:
-      - data/raw/jira_tasks_from_dwh.csv
-
+      - data/raw/raw_jira_tasks_from_api.json
