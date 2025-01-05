@@ -235,15 +235,15 @@ _Описание "Этап 1. Подготовка данных"_:
 - Данные представляют собой датасет, в котором каждая строка – это уникальная задача.
   У каждой строки есть атрибуты:
 
-| column                    | type   | description                                                 |
-|---------------------------|--------|-------------------------------------------------------------|
-| `jira_key`                | `text` | ID задачи                                                   |
-| `jira_title`              | `text` | Заголовок задачи в Jira                                     |
-| `jira_description`        | `text` | Описание задачи в Jira                                      |
-| `month_since_member_join` | `int`  | Количество месяцев, которое исполнитель работает в команде  |
-| `level_of_member`         | `int`  | Условный уровень навыков исполнителя (1 / 2 / 3)            |
-| `slack_thread`            | `text` | Сырой текст треда, в котором велась переписка по задаче     |
-| `slack_thread_task`       | `text` | Текст сообщения, в котором непосредственно ставилась задача |
+| column                    | type   | description                                                |
+|---------------------------|--------|------------------------------------------------------------|
+| `jira_key`                | `text` | ID задачи                                                  |
+| `jira_title`              | `text` | Заголовок задачи в Jira                                    |
+| `jira_description`        | `text` | Описание задачи в Jira                                     |
+| `month_since_member_join` | `int`  | Количество месяцев, которое исполнитель работает в команде |
+| `assignee_level_order`    | `int`  | Условный уровень навыков исполнителя (1 / 2 / 3)           |
+| `slack_thread`            | `text` | Сырой текст треда, в котором велась переписка по задаче    |
+| `time_to_complete_hours`  | `int`  | Время выполнения задачи в часах                            |
 
 - Риски и проблемы: TBD
 - Процесс генерации данных заключается в парсинге задач Jira, тредов в Slack и последующей
@@ -256,8 +256,16 @@ _Описание "Этап 1. Подготовка данных"_:
         - Для задач в Jira нужно привести их к единому формату из их описания и заголовка
         - Для Slack тредов нужно убрать лишние слова, символы, emoji
         - **Нужно вычистить весь PII и конфиденциальную информацию**
-        - Маты заменить на синонимы (опционально)
-- Итогом этого этапа должен стать датасет, в формате выше.
+- Для стандартизации датасета, общую информацию о задаче можно прогнать через LLM и получить
+  стандартизированный текст на основе неструктурированных данных.
+- **Итогом этого этапа должен стать датасет, в формате**
+
+| column                    | type   | description                                                |
+|---------------------------|--------|------------------------------------------------------------|
+| `task_description_llm`    | `text` | Прошедший через LLM текст задачи со всеми деталями         |
+| `assignee_level_order`    | `int`  | Условный уровень навыков исполнителя (1 / 2 / 3)           |
+| `month_since_member_join` | `int`  | Количество месяцев, которое исполнитель работает в команде |
+| `time_to_complete_hours`  | `int`  | Целевая переменная – время выполнения задачи в часах       |
 
 **Этап 2.1: Разработка базовой модели**
 
@@ -268,8 +276,8 @@ _Описание "Этап 1. Подготовка данных"_:
 
 ```json
 {
-  "predicted_hours": 4,
-  "confidence": 0.8
+    "predicted_hours": 4,
+    "confidence": 0.8
 }
 ```
 
@@ -285,18 +293,18 @@ _Описание "Этап 1. Подготовка данных"_:
 
 ```json
 {
-  "predicted_hours": 4,
-  "confidence": 0.8,
-  "description": "Some task description",
-  "features": {
-    "task_complexity": "High",
-    "user_specialization": "Data Science",
-    "definition_of_done": "Code review",
-    "stake_holders": [
-      "Product Owner",
-      "Team Lead"
-    ]
-  }
+    "predicted_hours": 4,
+    "confidence": 0.8,
+    "description": "Some task description",
+    "features": {
+        "task_complexity": "High",
+        "user_specialization": "Data Science",
+        "definition_of_done": "Code review",
+        "stake_holders": [
+            "Product Owner",
+            "Team Lead"
+        ]
+    }
 }
 ```
 
@@ -336,20 +344,20 @@ _Описание "Этап 1. Подготовка данных"_:
 
 ```json
 {
-  "predicted_hours": 4,
-  "confidence": 0.8,
-  "features": {
-    "task_complexity": "High",
-    "user_specialization": "Data Science",
-    "definition_of_done": "Code review",
-    "stake_holders": [
-      "Product Owner",
-      "Team Lead"
-    ],
-    "reasoning": {
-      "task_complexity": "Due to some facts from tasks X, Y, Z and requirements A, B, C ..."
+    "predicted_hours": 4,
+    "confidence": 0.8,
+    "features": {
+        "task_complexity": "High",
+        "user_specialization": "Data Science",
+        "definition_of_done": "Code review",
+        "stake_holders": [
+            "Product Owner",
+            "Team Lead"
+        ],
+        "reasoning": {
+            "task_complexity": "Due to some facts from tasks X, Y, Z and requirements A, B, C ..."
+        }
     }
-  }
 }
 ```
 
@@ -393,4 +401,3 @@ $$
     - Достижение поставленных метрик.
     - Положительная обратная связь от тестовых пользователей.
     - Отсутствие критических ошибок в работе модели и API.
-
