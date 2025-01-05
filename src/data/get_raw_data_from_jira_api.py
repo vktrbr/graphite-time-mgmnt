@@ -25,14 +25,13 @@ def main(
 
     issues = get_my_project_issues()
     issue_ids = [issue["key"] for issue in issues["issues"]]
+    logger.info(f"Got {len(issue_ids)=} issues ids")
 
-    data = [
-        get_bulk_data_from_jira_api(issue_ids[i : i + 100])
-        for i in range(0, len(issue_ids), 100)
-    ]
-    logger.info(f"Data shape: {len(data)}")
+    issues = get_bulk_data_from_jira_api(issue_ids)
+    logger.info(f"Got {len(issues)=} issues jsons")
 
-    output_path.write_text(json.dumps(data, indent=4, ensure_ascii=False))
+    output_path.write_text(json.dumps(issues, indent=4, ensure_ascii=False))
+    logger.info(f"Saved issues to {output_path}")
 
 
 def get_my_project_issues(key: str = config.jira_project_key) -> dict:
@@ -49,12 +48,14 @@ def get_my_project_issues(key: str = config.jira_project_key) -> dict:
     }
 
     headers = {}
+    json_data = {"jql": f"project = {key}", "fields": ["key"], "maxResults": 5000}
+
     try:
         response = requests.post(
             f"{config.jira_domain}/rest/api/3/search/jql",
             cookies=cookies,
             headers=headers,
-            json={"jql": f"project = {key}", "fields": ["key"], "maxResults": 5000},
+            json=json_data,
             timeout=600,
         )
 
@@ -66,11 +67,11 @@ def get_my_project_issues(key: str = config.jira_project_key) -> dict:
 
 def get_bulk_data_from_jira_api(
     issue_ids: list,
-    fields_list: Iterable[str] = (
+    fields_list: Iterable[str] | None = (
         "description",
         "assignee",
         "summary",
-        "issueType",
+        "issuetype",
         "status",
         "created",
         "timeestimate",
@@ -80,7 +81,7 @@ def get_bulk_data_from_jira_api(
         "customfield_12040",
         "customfield_12041",
     ),
-) -> dict:
+) -> list:
     """
     Get bulk data from Jira API
 
@@ -96,18 +97,25 @@ def get_bulk_data_from_jira_api(
 
     headers = {}
     try:
-        response = requests.post(
-            f"{config.jira_domain}/rest/api/2/issue/bulkfetch",
-            cookies=cookies,
-            headers=headers,
-            json={"fields": fields_list, "issueIdsOrKeys": issue_ids},
-            timeout=600,
-        )
+        issues = []
+        for i in range(0, len(issue_ids), 100):
+            json_data = {
+                "fields": fields_list,
+                "issueIdsOrKeys": issue_ids[i : i + 100],
+            }
+            response = requests.post(
+                f"{config.jira_domain}/rest/api/2/issue/bulkfetch",
+                cookies=cookies,
+                headers=headers,
+                json=json_data,
+                timeout=600,
+            )
+            issues.extend(response.json()["issues"])
 
-        return response.json()
+        return issues
     except Exception as e:
         logger.error(f"Error: {e}")
-        return {}
+        return []
 
 
 if __name__ == "__main__":
