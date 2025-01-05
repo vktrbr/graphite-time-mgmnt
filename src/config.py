@@ -39,9 +39,13 @@ class BaseConfig(BaseSettings):
 
     random_state: int = Field(default=42, alias="RANDOM_STATE")
     anthropic_api_key: Optional[str] = Field(alias="ANTHROPIC_API_KEY")
+
     jira_api_key: Optional[str] = Field(alias="JIRA_API_KEY")
     jira_domain: Optional[str] = Field(alias="JIRA_DOMAIN")
     jira_project_key: Optional[str] = Field(alias="JIRA_PROJECT_KEY")
+
+    slack_bot_token: Optional[str] = Field(alias="SLACK_BOT_TOKEN")
+    slack_app_token: Optional[str] = Field(alias="SLACK_APP_TOKEN")
 
     @model_validator(mode="after")
     def set_default_paths(self) -> "BaseConfig":
