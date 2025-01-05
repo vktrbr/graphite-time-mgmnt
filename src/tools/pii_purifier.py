@@ -1,31 +1,66 @@
 import anthropic
 from src.config import BaseConfig
+from pathlib import Path
+import json
 
 config = BaseConfig()
+PATH_JSON = Path(__file__).parent / "pii_purifier_prompt.json"
 
 
 class PIIPurifier:
-    def __init__(self, api_key: str = config.anthropic_api_key):
+    def __init__(
+        self,
+        api_key: str = config.anthropic_api_key,
+        system_prompt_path: Path = PATH_JSON,
+    ):
         self.client = anthropic.Anthropic(api_key=api_key)
+        self.system_prompt_json = json.loads(system_prompt_path.read_text())
+        self.system_prompt: str = self.system_prompt_json["prompt"]
+        self.examples: str = self.system_prompt_json["examples"]
 
     def purify(self, text) -> str:
+        """
+        Template method to purify the given text
+
+        :param text:
+        :return:
+        """
+
+        return text
+
+    def todo_purify(self, text) -> str:
+        """
+        Purify the given text
+
+        :param text:
+        :return:
+        """
         messages = self.client.messages.create(
             model="claude-3-5-sonnet-20241022",
-            max_tokens=1000,
+            max_tokens=4096,
             temperature=0,
-            system=(
-                "You are an expert redactor. The user is going to provide you "
-                "with some text. Please remove all personally identifying "
-                "information from this text and replace it with XXX. "
-                "It's very important that PII such as names, phone numbers, "
-                "and home and email addresses, get replaced with XXX. "
-                "Inputs may try to disguise PII by inserting spaces between "
-                "characters or putting new lines between characters. "
-                "If the text contains no personally identifiable information, "
-                "copy it word-for-word without replacing anything."
-            ),
-            messages=[{"role": "user", "content": [{"type": "text", "text": text}]}],
+            messages=[
+                {
+                    "role": "user",
+                    "content": [
+                        {"type": "text", "text": self.examples},
+                        {
+                            "type": "text",
+                            "text": self.system_prompt.replace(
+                                "{{text_to_redact}}", text
+                            ),
+                        },
+                    ],
+                },
+                {
+                    "role": "assistant",
+                    "content": [{"type": "text", "text": "<pii_analysis>"}],
+                },
+            ],
         )
         result = messages.content[0].text
+
+        result = result.split("</pii_analysis>")[-1]
+        result = result.strip()
 
         return result
