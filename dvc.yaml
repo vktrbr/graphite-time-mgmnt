@@ -70,3 +70,22 @@ stages:
       - data/interim/enriched_jira_tasks.json
     outs:
       - data/interim/cleaned_enriched_jira_tasks.json
+
+  combine_text_info_into_one_task:
+    desc: >
+      This stage will combine text information from different fields of the cleaned
+      data into a single field and save the combined data to the local storage.
+      The combining process involves merging text information from different fields
+      of the cleaned data into a single field for easier analysis.
+      The combined data will be saved in the data/interim/combined_jira_tasks.json
+      file.
+
+    cmd: >-
+      python src/data/combine_text_info_into_one_task.py
+      --input-path data/interim/cleaned_enriched_jira_tasks.json
+      --output-path data/interim/combined_jira_tasks.json
+
+    deps:
+      - data/interim/cleaned_enriched_jira_tasks.json
+    outs:
+      - data/interim/combined_jira_tasks.json

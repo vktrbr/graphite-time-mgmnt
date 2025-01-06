@@ -6,7 +6,7 @@ from pydantic_settings import BaseSettings
 
 import dotenv
 
-dotenv.load_dotenv()
+dotenv.load_dotenv("../.env")
 
 
 class BaseConfig(BaseSettings):

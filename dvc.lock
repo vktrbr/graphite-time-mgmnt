@@ -63,3 +63,16 @@ stages:
       hash: md5
       md5: cb6fa5453abde6a5f9404d7eae9c86af
       size: 376473
+  combine_text_info_into_one_task:
+    cmd: python src/data/combine_text_info_into_one_task.py --input-path data/interim/cleaned_enriched_jira_tasks.json
+      --output-path data/interim/combined_jira_tasks.json
+    deps:
+    - path: data/interim/cleaned_enriched_jira_tasks.json
+      hash: md5
+      md5: cb6fa5453abde6a5f9404d7eae9c86af
+      size: 376473
+    outs:
+    - path: data/interim/combined_jira_tasks.json
+      hash: md5
+      md5: 2d2b6997d85fe141e772b45cc8d140f2
+      size: 1132337
