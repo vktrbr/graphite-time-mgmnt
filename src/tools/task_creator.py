@@ -32,7 +32,6 @@ class TaskCreator:
         api_key: str = config.anthropic_api_key,
         system_prompt_path: Path = PATH_JSON,
     ):
-        logger.info(api_key)
         self.client = anthropic.Anthropic(api_key=api_key)
         self.system_prompt_json = json.loads(system_prompt_path.read_text())
         self.system_prompt: str = self.system_prompt_json["prompt"]
