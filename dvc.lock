@@ -76,3 +76,16 @@ stages:
       hash: md5
       md5: 2d2b6997d85fe141e772b45cc8d140f2
       size: 1132337
+  get_final_data_to_train:
+    cmd: python src/data/get_final_data_to_train.py --input-path data/interim/combined_jira_tasks.json
+      --output-path data/processed/final_data_to_train.json
+    deps:
+    - path: data/interim/combined_jira_tasks.json
+      hash: md5
+      md5: 64cdc7f7009736b385e3ee7b4134ec23
+      size: 1132339
+    outs:
+    - path: data/processed/final_data_to_train.json
+      hash: md5
+      md5: a7975ebf53d8cb784c6b95faf3d637f5
+      size: 762691

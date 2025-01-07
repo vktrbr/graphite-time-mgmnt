@@ -89,3 +89,18 @@ stages:
       - data/interim/cleaned_enriched_jira_tasks.json
     outs:
       - data/interim/combined_jira_tasks.json
+
+  get_final_data_to_train:
+    desc: >
+      This stage will prepare the final data for training the model and save it.
+      The final data will be saved in the data/processed/final_data_to_train.csv file.
+
+    cmd: >-
+      python src/data/get_final_data_to_train.py
+      --input-path data/interim/combined_jira_tasks.json
+      --output-path data/processed/final_data_to_train.json
+
+    deps:
+      - data/interim/combined_jira_tasks.json
+    outs:
+      - data/processed/final_data_to_train.json
