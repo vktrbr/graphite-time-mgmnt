@@ -57,9 +57,11 @@ def main(
             "key": "jira_key",
             "fields.summary": "jira_title",
             "fields.description": "jira_description",
+            "fields.created": "jira_created",
+            "fields.assignee.emailAddress": "assignee_email",
             "assignee_level_order": "assignee_level_order",
             "slack_link": "slack_link",
-            "experience_weeks": "month_since_member_join",
+            "experience_weeks": "weeks_since_member_join",
             "time_to_complete_hours": "time_to_complete_hours",
         },
     )

@@ -63,8 +63,8 @@ def select_columns(data: dict):
     return {
         "assignee_level_order": data["assignee_level_order"],
         "jira_key": data["jira_key"],
-        "month_since_member_join": data["month_since_member_join"],
-        "time_to_complete_hours": data["time_to_complete_hours"],
+        "weeks_since_member_join": data["weeks_since_member_join"],
+        "time_to_complete_hours": max(data["time_to_complete_hours"], 1),
         "task_text": data["prepared_task"]["result"],
     }
 
