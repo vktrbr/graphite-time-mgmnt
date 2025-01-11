@@ -72,14 +72,14 @@ def parse_slack_link(link: str):
     :return:
     """
     match = re.search(r"/archives/([^/]+)/p(\d+)", link)
-    if match:
-        channel_id = match.group(1)
-        raw_ts = match.group(2)
-        # Format the timestamp (add a '.' before the last 6 digits)
-        timestamp = f"{raw_ts[:10]}.{raw_ts[10:]}"
-        return channel_id, timestamp
-    else:
+    if not match:
         raise ValueError("Invalid Slack message link format")
+
+    channel_id = match.group(1)
+    raw_ts = match.group(2)
+    # Format the timestamp (add a '.' before the last 6 digits)
+    timestamp = f"{raw_ts[:10]}.{raw_ts[10:]}"
+    return channel_id, timestamp
 
 
 def fetch_thread_messages(channel_id: str, parent_ts: str):
@@ -112,6 +112,8 @@ def fetch_thread_messages(channel_id: str, parent_ts: str):
 
 def filter_message_at_the_same_day(messages, parent_ts):
     """
+
+    The end of 24 hours is the end of the day.
 
     :param messages:
     :param parent_ts: Format "1634567890.000100"
