@@ -1,0 +1,106 @@
+stages:
+  get_raw_data_from_jira_api:
+    desc: >
+      This stage will fetch raw data from the Jira API and save it to the local storage.
+      The raw data will be saved in the data/raw/raw_jira_tasks_from_api.json file.
+
+    cmd: >
+      python src/data/get_raw_data_from_jira_api.py
+      --output-path data/raw/raw_jira_tasks_from_api.json
+
+    outs:
+      - data/raw/raw_jira_tasks_from_api.json
+
+  filter_jira_issues:
+    desc: >
+      This stage will filter the raw data from the API and save the filtered data
+      to the local storage.
+      The filtering process involves selecting specific fields from the raw data and
+      removing unnecessary information.
+      The filtered data will be saved in the data/interim/filtered_jira_tasks.json
+      file.
+
+    cmd: >
+      python src/data/filter_tasks_n_fields_jira_json.py
+      --input-path data/raw/raw_jira_tasks_from_api.json
+      --output-path data/interim/filtered_jira_tasks.json
+
+    deps:
+      - data/raw/raw_jira_tasks_from_api.json
+    outs:
+      - data/interim/filtered_jira_tasks.json
+
+  enrich_with_slack_conversations:
+    desc: >
+      This stage will enrich the filtered data with Slack conversations and save the
+      enriched data to the local storage.
+      The enrichment process involves retrieving Slack conversations related to the
+      Jira tasks and adding them to the filtered data.
+      The enriched data will be saved in the data/interim/enriched_jira_tasks.json
+      file.
+      Some of tasks may not have Slack conversations or the conversations may not
+      be available due to privacy settings.
+
+    cmd: >-
+      python src/data/enrich_with_slack_thread.py
+      --input-path data/interim/filtered_jira_tasks.json
+      --output-path data/interim/enriched_jira_tasks.json
+
+    deps:
+      - data/interim/filtered_jira_tasks.json
+    outs:
+      - data/interim/enriched_jira_tasks.json
+
+  remove_pii_from_enriched_data:
+    desc: >
+      This stage will remove personally identifiable information (PII) from the
+      enriched data and save the cleaned data to the local storage.
+      The cleaning process involves removing any PII that may be present in the
+      enriched data.
+      The cleaned data will be saved in the data/interim/cleaned_enriched_jira_tasks.json
+      file.
+
+    cmd: >-
+      python src/data/remove_pii_from_data.py
+      --input-path data/interim/enriched_jira_tasks.json
+      --output-path data/interim/cleaned_enriched_jira_tasks.json
+      --pii-fields-to-remove jira_description,jira_title,slack_thread_messages
+
+    deps:
+      - data/interim/enriched_jira_tasks.json
+    outs:
+      - data/interim/cleaned_enriched_jira_tasks.json
+
+  combine_text_info_into_one_task:
+    desc: >
+      This stage will combine text information from different fields of the cleaned
+      data into a single field and save the combined data to the local storage.
+      The combining process involves merging text information from different fields
+      of the cleaned data into a single field for easier analysis.
+      The combined data will be saved in the data/interim/combined_jira_tasks.json
+      file.
+
+    cmd: >-
+      python src/data/combine_text_info_into_one_task.py
+      --input-path data/interim/cleaned_enriched_jira_tasks.json
+      --output-path data/interim/combined_jira_tasks.json
+
+    deps:
+      - data/interim/cleaned_enriched_jira_tasks.json
+    outs:
+      - data/interim/combined_jira_tasks.json
+
+  get_final_data_to_train:
+    desc: >
+      This stage will prepare the final data for training the model and save it.
+      The final data will be saved in the data/processed/final_data_to_train.csv file.
+
+    cmd: >-
+      python src/data/get_final_data_to_train.py
+      --input-path data/interim/combined_jira_tasks.json
+      --output-path data/processed/final_data_to_train.json
+
+    deps:
+      - data/interim/combined_jira_tasks.json
+    outs:
+      - data/processed/final_data_to_train.json

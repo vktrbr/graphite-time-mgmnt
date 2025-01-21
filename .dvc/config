@@ -1,0 +1,5 @@
+[core]
+    remote = jira_tasks
+    autostage = true
+['remote "jira_tasks"']
+    url = s3://3f97703b-my-personal-s3-bucket-for-some-projects
