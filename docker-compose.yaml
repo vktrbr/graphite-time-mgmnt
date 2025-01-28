@@ -1,0 +1,10 @@
+services:
+
+  task_preparer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    container_name: "task_preparer"
+    ports:
+      - "8000:8000"

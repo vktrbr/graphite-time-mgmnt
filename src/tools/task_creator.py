@@ -54,7 +54,7 @@ class TaskCreator:
         )
         return text
 
-    def create_task(self, text) -> TaskCreatedSchema:
+    def create_task(self, text: str) -> TaskCreatedSchema:
         """
 
         :param text:
